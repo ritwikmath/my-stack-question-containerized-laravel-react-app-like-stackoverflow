@@ -1,0 +1,87 @@
+version: '3.8'
+
+networks:
+  mystack:
+    driver: bridge
+
+x-common-variables: &common-variables
+  MYSQL_DATABASE: mystack
+  MYSQL_ROOT_PASSWORD: mystack
+
+services:
+  app:
+    build:
+      args:
+        user: ritwik
+        uid: 1000
+      context: ./server
+      dockerfile: Dockerfile
+    image: mystack-server
+    container_name: mystack-api
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./server:/var/www/
+      - /var/www/node_modules
+      - /var/www/vendor
+    networks:
+      - mystack
+  
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: mystack-client
+    container_name: mystack-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    working_dir: /app
+    volumes:
+      - ./client:/app
+    networks:
+      - mystack
+  
+  mysql:
+    image: mysql:latest
+    container_name: mystack-db
+    restart: unless-stopped
+    environment:
+      <<: *common-variables
+      MYSQL_USER: ritwik
+      MYSQL_PASSWORD: ritwik@2022
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    ports:
+      - "6306:3306"
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+    networks:
+      - mystack
+
+  phpmyadmin:
+    depends_on:
+      - mysql
+    image: phpmyadmin/phpmyadmin
+    container_name: mystack-phpmyadmin
+    restart: always
+    ports:
+      - "8088:80"
+    environment:
+      <<: *common-variables
+      PMA_HOST: mysql
+    networks:
+      - mystack
+    
+  nginx:
+    image: nginx:latest
+    container_name: mystack-nginx
+    restart: always
+    ports:
+      - "5000:80"
+      - "8090:81"
+    volumes:
+      - ./server:/var/www
+      - ./nginx:/etc/nginx/conf.d
+    networks:
+      - mystack
