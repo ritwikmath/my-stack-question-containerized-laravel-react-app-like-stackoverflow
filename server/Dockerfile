@@ -45,6 +45,9 @@ RUN composer install
 # Generate artisan key
 RUN php artisan key:Generate
 
+# Create the symbolic link
+RUN php artisan storage:link
+
 # Install NPM Packages and compile
 RUN npm install
 RUN npm run dev
