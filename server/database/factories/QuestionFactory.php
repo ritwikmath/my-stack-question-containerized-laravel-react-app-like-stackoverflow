@@ -22,7 +22,8 @@ class QuestionFactory extends Factory
         return [
             'title' => $title,
             'slug' => Str::snake($title) . '_' . Carbon::now()->timestamp,
-            'description' => $this->faker->paragraph
+            'description' => $this->faker->paragraph,
+            'status' => 'open'
         ];
     }
 }

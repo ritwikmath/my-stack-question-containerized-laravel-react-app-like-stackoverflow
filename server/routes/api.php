@@ -19,4 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::resource('questions', QuestionController::class)->except(['create', 'edit']);
+Route::any('login', [\App\Http\Controllers\AuthController::class, 'login'])->name('login');
+
+Route::middleware(['auth:api'])->group(function () {
+    Route::resource('questions', QuestionController::class)->except(['create', 'edit']);
+});

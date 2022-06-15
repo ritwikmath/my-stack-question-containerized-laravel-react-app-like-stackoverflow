@@ -52,5 +52,7 @@ RUN php artisan storage:link
 RUN npm install
 RUN npm run dev
 
+RUN chown $user -R ./
+
 # Set user
 USER $user

@@ -46,11 +46,12 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
         try {
+
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|unique:questions',
                 'description' => 'required|string|min:5'
             ]);
-            if ($validator->fails()) return response()->json(Arr::flatten($validator->errors()->messages()), 403);
+            if ($validator->fails()) return response()->json(Arr::flatten($validator->errors()->messages()), 400);
 
             $question = Question::create([
                 'title' => $request->title,
@@ -103,7 +104,7 @@ class QuestionController extends Controller
                 'description' => 'string|min:5',
                 'status' => 'string|in:open,closed'
             ]);
-            if ($validator->fails()) return response()->json(Arr::flatten($validator->errors()->messages()), 403);
+            if ($validator->fails()) return response()->json(Arr::flatten($validator->errors()->messages()), 400);
 
             $updatedValues = array_intersect_key($request->all(), $question->toArray());
 
