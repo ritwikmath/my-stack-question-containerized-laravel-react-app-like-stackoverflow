@@ -39,6 +39,9 @@ COPY ./ /var/www
 # Set working directory
 WORKDIR /var/www
 
+# Create .env file
+# RUN cp .env.example .env
+
 # Install composer packages
 RUN composer install
 

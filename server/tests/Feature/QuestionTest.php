@@ -3,7 +3,6 @@
 use App\Models\Question;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 
 uses(RefreshDatabase::class);
 
@@ -17,7 +16,7 @@ it('authenticates user', function () {
     $this->postJson('api/questions', $question_raw)->assertStatus(401);
     $this->putJson("api/questions/{$question->slug}", ['status' => 'closed'])->assertStatus(401);
     $this->deleteJson("api/questions/{$question->slug}")->assertStatus(401);
-})->group('authentication');
+})->group('questions-authentication');
 
 it('validates question has title', function () {
     $user = User::factory()->create();
