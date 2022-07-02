@@ -34,8 +34,6 @@ services:
     image: mystack-client
     container_name: mystack-app
     restart: unless-stopped
-    ports:
-      - "3000:3000"
     working_dir: /app
     volumes:
       - ./client:/app

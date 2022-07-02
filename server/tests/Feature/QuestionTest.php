@@ -47,14 +47,17 @@ it('validates description has atleast 5 characters', function () {
 it('can create a question and sets default status value open ', function () {
     $user = User::factory()->create();
     $question = Question::factory()->raw();
+    $question['tags'] = ['database'];
     $response = actingAs($user)->postJson('api/questions', $question);
 
     $response->assertStatus(201);
     $responseData = json_decode($response->getContent());
+    $stored_question = Question::find($responseData->data->id);
 
     $this->assertTrue($responseData->data->user_id == $user->id);
     $this->assertTrue($responseData->data->title == $question['title']);
-    $this->assertTrue(Question::find($responseData->data->id)->status == 'open');
+    $this->assertTrue($stored_question->status == 'open');
+    $this->assertTrue($stored_question->tags[0]->name == 'database');
 });
 
 it('can fetch questions', function () {

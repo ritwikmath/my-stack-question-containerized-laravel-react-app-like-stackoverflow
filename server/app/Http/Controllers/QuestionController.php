@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
+use App\Models\Tag;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -49,7 +50,9 @@ class QuestionController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'title' => 'required|string|unique:questions',
-                'description' => 'required|string|min:5'
+                'description' => 'required|string|min:5',
+                'tags' => 'array',
+                'tags.*' => 'required|string|min:2'
             ]);
             if ($validator->fails()) return response()->json(Arr::flatten($validator->errors()->messages()), 400);
 
@@ -59,6 +62,15 @@ class QuestionController extends Controller
                 'description' => $request->description,
                 'user_id' => auth()->id()
             ]);
+
+            if ($request->tags) {
+                $tag_ids = array();
+                foreach($request->tags as $tag_name ) {
+                    array_push($tag_ids, Tag::firstOrCreate(['name' => $tag_name])->id);
+                }
+
+                $question->tags()->attach($tag_ids);
+            }
 
             return response()->json([
                 'message' => 'Question created successfully',

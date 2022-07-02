@@ -23,4 +23,9 @@ class Answer extends Model
     {
         return $this->morphOne(CodeSnippet::class, 'codeable');
     }
+
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }
 }

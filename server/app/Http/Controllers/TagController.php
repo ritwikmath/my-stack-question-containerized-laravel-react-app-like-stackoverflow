@@ -46,7 +46,7 @@ class TagController extends Controller
             }
 
             $question = Question::find($request->question_id);
-            $question->tags()->sync($tag_ids);
+            $question->tags()->syncWithoutDetaching($tag_ids);
 
             return response()->json([
                 'message' => 'Tag attached successfully'

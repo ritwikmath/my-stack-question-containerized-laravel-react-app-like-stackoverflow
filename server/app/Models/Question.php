@@ -40,4 +40,9 @@ class Question extends Model
     {
         return $this->morphToMany(Tag::class, 'taggable');
     }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
+    }
 }

@@ -46,14 +46,16 @@ it('crates/finds tag and attach it with question', function() {
     $user = User::factory()->create();
     $question = Question::factory()->create(['user_id' => $user->id]);
     $tag = Tag::factory()->create();
+    $question->tags()->attach($tag->id);
 
-    $response = actingAs($user)->postJson('api/tags', ['name' => ['database', $tag->name], 'question_id' => $question->id]);
+    $response = actingAs($user)->postJson('api/tags', ['name' => ['database'], 'question_id' => $question->id]);
     $response->assertStatus(201);
     $responseData = json_decode($response->getContent());
 
     $this->assertTrue($responseData->message == 'Tag attached successfully');
     $this->assertCount(2, $question->tags);
-    $this->assertTrue($question->tags[0]->name == 'database');
+    $this->assertTrue($question->tags[1]->name == 'database');
+    $this->assertTrue($question->tags[0]->name == $tag->name);
 });
 
 it('fetches all tags', function() {
