@@ -31,6 +31,25 @@ class TagController extends Controller
         }
     }
 
+    public function search($term = null) {
+        try {
+            if (!$term || $term == '')
+                return response()->json([
+                    'message' => 'Tag search term missing'
+                ], 400);
+
+                $tags = Tag::where('name', 'like', "%{$term}%")->get();
+
+            return response()->json([
+                'message' => 'Tags fetched successfully',
+                'data' => $tags
+            ]);
+        } catch (Exception $ex) {
+            Log::error($ex->getMessage());
+            return response()->json('Tags fetch unsuccessfull', 500);
+        }
+    }
+
     public function store(Request $request) {
         try {
             $validator = Validator::make($request->all(), [

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TagController;
 use Illuminate\Http\Request;
@@ -25,5 +26,8 @@ Route::any('login', [\App\Http\Controllers\AuthController::class, 'login'])->nam
 Route::middleware(['auth:api'])->group(function () {
     Route::resource('questions', QuestionController::class)->except(['create', 'edit']);
     Route::resource('tags', TagController::class)->except(['create', 'edit', 'update', 'delete']);
+    Route::resource('answers', AnswerController::class)->except(['index', 'show', 'create', 'edit']);
+    Route::get('tags/search/{term?}', [TagController::class, 'search'])->name('tags.search');
+    Route::get('answers/{question_id}', [AnswerController::class, 'index'])->name('answers.index');
     Route::post('tags/{tag}/{question_id}', [TagController::class, 'remove'])->name('tags.remove');
 });

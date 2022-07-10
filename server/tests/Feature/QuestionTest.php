@@ -6,6 +6,11 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+$code = '$color = "red";
+echo "My car is " . $color . "<br>";
+echo "My house is " . $COLOR . "<br>";
+echo "My boat is " . $coLOR . "<br>";';
+
 it('authenticates user', function () {
     $user = User::factory()->create();
     $question_raw= Question::factory()->raw();
@@ -44,7 +49,7 @@ it('validates description has atleast 5 characters', function () {
     $this->assertTrue($responseData[0] == 'The description must be at least 5 characters.');
 });
 
-it('can create a question and sets default status value open ', function () {
+it('create a question and sets default status value open ', function () {
     $user = User::factory()->create();
     $question = Question::factory()->raw();
     $question['tags'] = ['database'];
@@ -60,7 +65,21 @@ it('can create a question and sets default status value open ', function () {
     $this->assertTrue($stored_question->tags[0]->name == 'database');
 });
 
-it('can fetch questions', function () {
+it('create a question with code-block', function () use ($code) {
+    $user = User::factory()->create();
+    $question = Question::factory()->raw();
+    $question['tags'] = ['database'];
+    $question['code_snippet'] = $code;
+    $response = actingAs($user)->postJson('api/questions', $question);
+
+    $response->assertStatus(201);
+    $responseData = json_decode($response->getContent());
+    $stored_question = Question::find($responseData->data->id);
+
+    $this->assertTrue($stored_question->code->body == $code);
+});
+
+it('fetch questions', function () {
     $user = User::factory()->create();
     $question = Question::factory()->create(['user_id' => $user->id, 'status' => 'open']);
     $response = actingAs($user)->getJson('api/questions');
@@ -70,7 +89,7 @@ it('can fetch questions', function () {
     $this->assertTrue($responseData->data[0]->status == $question->status);
 });
 
-it('can fetch a single question', function () {
+it('fetch a single question', function () {
     $user = User::factory()->create();
     $question = Question::factory()->create(['user_id' => $user->id, 'status' => 'open']);
 
@@ -82,7 +101,7 @@ it('can fetch a single question', function () {
     $this->assertTrue($responseData->data->id == $question->id);
 });
 
-it('can update a question', function () {
+it('update a question', function () {
     $user = User::factory()->create();
     $question = Question::factory()->create(['user_id' => $user->id, 'status' => 'open']);
 
@@ -92,7 +111,7 @@ it('can update a question', function () {
     $this->assertTrue($responseData->data->status == 'closed');
 });
 
-it('can delete a question', function () {
+it('delete a question', function () {
     $user = User::factory()->create();
     $question = Question::factory()->create(['user_id' => $user->id, 'status' => 'open']);
 

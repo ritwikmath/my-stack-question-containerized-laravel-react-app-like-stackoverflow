@@ -22,7 +22,6 @@ it('authenticates user', function () {
 
 it('validates tag has name', function() {
     $user = User::factory()->create();
-    $question = Question::factory()->create(['user_id' => $user->id]);
 
     $response = actingAs($user)->postJson('api/tags', []);
     $response->assertStatus(400);
@@ -63,6 +62,18 @@ it('fetches all tags', function() {
     $tag = Tag::factory()->create();
 
     $response = actingAs($user)->getJson('api/tags');
+    $response->assertStatus(200);
+    $responseData = json_decode($response->getContent());
+    $this->assertTrue($responseData->data[0]->name == $tag->name);
+});
+
+it('search tags', function() {
+    $user = User::factory()->create();
+    Tag::factory()->create();
+    $tag = Tag::factory()->create();
+    $term = substr($tag->name, -3);
+
+    $response = actingAs($user)->getJson("api/tags/search/{$term}");
     $response->assertStatus(200);
     $responseData = json_decode($response->getContent());
     $this->assertTrue($responseData->data[0]->name == $tag->name);
@@ -112,5 +123,3 @@ it('delete tag and link with questions', function() {
     $this->assertEmpty(Tag::find($tag->id));
     $this->assertCount(0, DB::table('taggables')->get());
 });
-
-

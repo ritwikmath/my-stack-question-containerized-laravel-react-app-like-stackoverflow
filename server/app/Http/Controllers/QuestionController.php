@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CodeSnippet;
 use App\Models\Question;
 use App\Models\Tag;
 use App\Models\User;
@@ -70,6 +71,10 @@ class QuestionController extends Controller
                 }
 
                 $question->tags()->attach($tag_ids);
+            }
+
+            if ($request->code_snippet) {
+                $question->code()->create(['body' => $request->code_snippet]);
             }
 
             return response()->json([
@@ -146,11 +151,11 @@ class QuestionController extends Controller
             $question->delete();
 
             return response()->json([
-                'message' => 'Question update successfully'
+                'message' => 'Question deleted successfully'
             ]);
         } catch (Exception $ex) {
             Log::error($ex->getMessage());
-            return response()->json('Question update unsuccessfull', 500);
+            return response()->json('Question delete unsuccessfull', 500);
         }
     }
 }

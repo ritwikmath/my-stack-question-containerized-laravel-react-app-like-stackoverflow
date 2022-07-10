@@ -9,6 +9,8 @@ class CodeSnippet extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['body'];
+
     public function codeable()
     {
         return $this->morphTo();
