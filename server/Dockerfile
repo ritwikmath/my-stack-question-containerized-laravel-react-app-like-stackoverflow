@@ -40,7 +40,7 @@ COPY ./ /var/www
 WORKDIR /var/www
 
 # Create .env file
-# RUN cp .env.example .env
+RUN cp .env.example .env
 
 # Install composer packages
 RUN composer install
